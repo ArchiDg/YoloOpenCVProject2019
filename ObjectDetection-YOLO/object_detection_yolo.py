@@ -99,7 +99,10 @@ def postprocess(frame, outs):
 
 # Process inputs
 winName = 'Deep learning object detection in OpenCV'
-cv.namedWindow(winName, cv.WINDOW_NORMAL)
+
+'''
+cv.namedWindow(winName, cv.WINDOW_NORMAL)   # Inorder to view X frame preview 1/2
+'''
 
 outputFile = "yolo_out_py.avi"
 if (args.image):
@@ -155,6 +158,9 @@ while cv.waitKey(1) < 0:
     label = 'Inference time: %.2f ms' % (t * 1000.0 / cv.getTickFrequency())
     cv.putText(frame, label, (0, 15), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255))
 
+'''
+# Inorder to view X frame preview 2/2
+
     # Write the frame with the detection boxes
     if (args.image):
         cv.imwrite(outputFile, frame.astype(np.uint8));
@@ -162,4 +168,4 @@ while cv.waitKey(1) < 0:
         vid_writer.write(frame.astype(np.uint8))
 
     cv.imshow(winName, frame)
-
+'''
