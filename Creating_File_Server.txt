@@ -1,0 +1,24 @@
+Creating_File_Server.txt
+
+- Basic Knowledge about File Server:
+	= https://help.gnome.org/users/gnome-help/stable/nautilus-connect.html.en
+
+45.3.76.52
+
+MyIP: 172.30.77.217
+
+
+Dropbox Bird Image Link: https://www.dropbox.com/s/zs7p0yke8m7wyzz/yolo.jpg?dl=1
+
+
+# Unity App Functionalities:
+	- (done) Save Image from Hololens to a remote location 
+	- (done) Run YOLOv3 on the Image
+	- Identify the object under the cursor
+	- (done) Send the output to the UnityApp
+		- (done) Image
+		- (done) Video
+		- Text-to-Speech in real-time (via MQTT)
+
+
+https://www.dropbox.com/sh/ej0nh5kgcryycke/AAB5oC9EV3z8heVBwgYuTJWGa/yolo.jpg?dl=1

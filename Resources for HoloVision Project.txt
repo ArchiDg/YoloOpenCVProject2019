@@ -1,0 +1,4 @@
+Resources for HoloVision Project.txt
+
+# OpenCV with Unity3D
+ = https://www.raywenderlich.com/5475-introduction-to-using-opencv-with-unity

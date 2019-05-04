@@ -18,6 +18,7 @@ inpHeight = 416      #Height of network's input image
 parser = argparse.ArgumentParser(description='Object Detection using YOLO in OPENCV')
 parser.add_argument('--image', help='Path to image file.')
 parser.add_argument('--video', help='Path to video file.')
+parser.add_argument('--url', help='Path to remote url.')
 args = parser.parse_args()
         
 # Load names of classes
@@ -43,6 +44,14 @@ def getOutputsNames(net):
 
 # Draw the predicted bounding box
 def drawPred(classId, conf, left, top, right, bottom):
+    # @Ri Debugging the values
+    # print("classId: ", classId)
+    # print("conf: ", conf) 
+    # print("left: ", left)
+    # print("top: ", top) 
+    # print("right: ", right)
+    # print("bottom: ", bottom)
+
     # Draw a bounding box.
     cv.rectangle(frame, (left, top), (right, bottom), (255, 178, 50), 3)
     
@@ -61,6 +70,10 @@ def drawPred(classId, conf, left, top, right, bottom):
 
 # Remove the bounding boxes with low confidence using non-maxima suppression
 def postprocess(frame, outs):
+
+    # @Ri Debugging the outs
+    # print("outs: ", outs)
+    
     frameHeight = frame.shape[0]
     frameWidth = frame.shape[1]
 
@@ -100,9 +113,9 @@ def postprocess(frame, outs):
 # Process inputs
 winName = 'Deep learning object detection in OpenCV'
 
-'''
+
 cv.namedWindow(winName, cv.WINDOW_NORMAL)   # Inorder to view X frame preview 1/2
-'''
+
 
 outputFile = "yolo_out_py.avi"
 if (args.image):
@@ -119,6 +132,10 @@ elif (args.video):
         sys.exit(1)
     cap = cv.VideoCapture(args.video)
     outputFile = args.video[:-4]+'_yolo_out_py.avi'
+elif (args.url):
+    print("args.url: ", args.url)
+    cap = cv.VideoCapture(args.url)
+    outputFile = args.url.rsplit('/',1)[1][:-9]+'.jpg'
 else:
     # Webcam input
     cap = cv.VideoCapture(0)
@@ -158,7 +175,7 @@ while cv.waitKey(1) < 0:
     label = 'Inference time: %.2f ms' % (t * 1000.0 / cv.getTickFrequency())
     cv.putText(frame, label, (0, 15), cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255))
 
-'''
+
 # Inorder to view X frame preview 2/2
 
     # Write the frame with the detection boxes
@@ -168,4 +185,4 @@ while cv.waitKey(1) < 0:
         vid_writer.write(frame.astype(np.uint8))
 
     cv.imshow(winName, frame)
-'''
+
