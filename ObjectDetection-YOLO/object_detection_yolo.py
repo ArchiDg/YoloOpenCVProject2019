@@ -8,6 +8,7 @@ import argparse
 import sys
 import numpy as np
 import os.path
+import math
 
 # Initialize the parameters
 confThreshold = 0.5  #Confidence threshold
@@ -19,6 +20,7 @@ parser = argparse.ArgumentParser(description='Object Detection using YOLO in OPE
 parser.add_argument('--image', help='Path to image file.')
 parser.add_argument('--video', help='Path to video file.')
 parser.add_argument('--url', help='Path to remote url.')
+parser.add_argument('--single', help='To identify the centermost object.')
 args = parser.parse_args()
         
 # Load names of classes
@@ -35,6 +37,14 @@ net = cv.dnn.readNetFromDarknet(modelConfiguration, modelWeights)
 net.setPreferableBackend(cv.dnn.DNN_BACKEND_OPENCV)
 net.setPreferableTarget(cv.dnn.DNN_TARGET_CPU)
 
+
+# Checks if the center is inside the boundary 
+def inBound(center_height, center_weight, left, top, right, bottom):
+    if(center_weight >= left and center_height >= top and center_weight <= right and center_height <= bottom):
+        return True
+    return False
+
+
 # Get the names of the output layers
 def getOutputsNames(net):
     # Get the names of all the layers in the network
@@ -43,15 +53,16 @@ def getOutputsNames(net):
     return [layersNames[i[0] - 1] for i in net.getUnconnectedOutLayers()]
 
 # Draw the predicted bounding box
-def drawPred(classId, conf, left, top, right, bottom):
+def drawPred(classId, conf, left, top, right, bottom): 
     # @Ri Debugging the values
-    # print("classId: ", classId)
-    # print("conf: ", conf) 
-    # print("left: ", left)
-    # print("top: ", top) 
-    # print("right: ", right)
-    # print("bottom: ", bottom)
-
+    # if(args.single):
+        # print("args.single: ", args.single)
+        # print("classId: ", classId)
+        # print("conf: ", conf) 
+        # print("left: ", left)
+        # print("top: ", top) 
+        # print("right: ", right)
+        # print("bottom: ", bottom)
     # Draw a bounding box.
     cv.rectangle(frame, (left, top), (right, bottom), (255, 178, 50), 3)
     
@@ -76,6 +87,15 @@ def postprocess(frame, outs):
     
     frameHeight = frame.shape[0]
     frameWidth = frame.shape[1]
+
+    # print("frameHeight: ", frameHeight)
+    # print("frameWidth: ", frameWidth)
+
+    # Calculating the center point of the frame 
+    center_height = frameHeight / 2
+    center_weight = frameWidth / 2
+
+    # print("center_point: ", center_point)
 
     # Scan through all the bounding boxes output from the network and keep only the
     # ones with high confidence scores. Assign the box's class label as the class with the highest score.
@@ -108,7 +128,22 @@ def postprocess(frame, outs):
         top = box[1]
         width = box[2]
         height = box[3]
-        drawPred(classIds[i], confidences[i], left, top, left + width, top + height)
+        # Classifing only the center object
+        # @Ri Debugging
+        # print("args.single: ", args.single)
+        # print("center_height: ", center_height)
+        # print("center_weight: ", center_weight)
+        # print("left: ", left)
+        # print("top: ", top)
+        # print("right: ", left+width)
+        # print("bottom: ", top+height)
+        if(args.single):
+            # print("inBound: ", inBound(center_height, center_weight, left, top, left+width, top+height))
+            if(inBound(center_height, center_weight, left, top, left+width, top+height)):
+                drawPred(classIds[i], confidences[i], left, top, left + width, top + height)
+        # Classifying all the objects
+        else:
+            drawPred(classIds[i], confidences[i], left, top, left + width, top + height)
 
 # Process inputs
 winName = 'Deep learning object detection in OpenCV'
@@ -124,18 +159,27 @@ if (args.image):
         print("Input image file ", args.image, " doesn't exist")
         sys.exit(1)
     cap = cv.VideoCapture(args.image)
-    outputFile = args.image[:-4]+'_yolo_out_py.jpg'
+    if(args.single):
+        outputFile = args.image[:-4]+'_single_yolo_out_py.jpg'
+    else:
+        outputFile = args.image[:-4]+'_yolo_out_py.jpg'
 elif (args.video):
     # Open the video file
     if not os.path.isfile(args.video):
         print("Input video file ", args.video, " doesn't exist")
         sys.exit(1)
     cap = cv.VideoCapture(args.video)
-    outputFile = args.video[:-4]+'_yolo_out_py.avi'
+    if(args.single):
+        outputFile = args.video[:-4]+'_single_yolo_out_py.avi'
+    else:
+        outputFile = args.video[:-4]+'_yolo_out_py.avi'
 elif (args.url):
     print("args.url: ", args.url)
     cap = cv.VideoCapture(args.url)
-    outputFile = args.url.rsplit('/',1)[1][:-9]+'.jpg'
+    if(args.single):
+        outputFile = args.url.rsplit('/',1)[1][:-9]+'_single_url_out.jpg'
+    else:    
+        outputFile = args.url.rsplit('/',1)[1][:-9]+'_url_out.jpg'
 else:
     # Webcam input
     cap = cv.VideoCapture(0)

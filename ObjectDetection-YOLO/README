@@ -7,11 +7,13 @@ Run the getModels.sh file from command line to download the needed model files
 Python:
 Commandline usage for object detection using YOLOv3 
 a single image:
-	python3 object_detection_yolo.py --image=bird.jpg
+	python3 object_detection_yolo.py --image=bird_old.jpg
+a single image with single prediction:
+	python3 object_detection_yolo.py --single=True --image=bird_old.jpg
 a video file:
 	python3 object_detection_yolo.py --video=run.mp4
 a URL:
-	python3 object_detection_yolo.py --url="https://www.dropbox.com/s/zs7p0yke8m7wyzz/yolo.jpg?dl=1"
+	python3 object_detection_yolo.py --url="https://www.dropbox.com/s/zs7p0yke8m7wyzz/noone.jpg?dl=1"
 
 C++:
 a single image:
