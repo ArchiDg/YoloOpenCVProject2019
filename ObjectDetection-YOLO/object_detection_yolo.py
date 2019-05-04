@@ -9,6 +9,15 @@ import sys
 import numpy as np
 import os.path
 import math
+import paho.mqtt.client as mqtt
+
+# Create MQTT Client Instance 
+client_name = "holoyolo"
+broker_address = "dveiot.cs.vt.edu"
+client = mqtt.Client(client_name)
+client.connect(broker_address)
+# client.publish("theia", "Racer Archi")
+
 
 # Initialize the parameters
 confThreshold = 0.5  #Confidence threshold
@@ -20,7 +29,8 @@ parser = argparse.ArgumentParser(description='Object Detection using YOLO in OPE
 parser.add_argument('--image', help='Path to image file.')
 parser.add_argument('--video', help='Path to video file.')
 parser.add_argument('--url', help='Path to remote url.')
-parser.add_argument('--single', help='To identify the centermost object.')
+parser.add_argument('--single', help='To identify the single object at the center.')
+parser.add_argument('--label', help='Send the label(s) of the object(s).')
 args = parser.parse_args()
         
 # Load names of classes
@@ -72,6 +82,8 @@ def drawPred(classId, conf, left, top, right, bottom):
     if classes:
         assert(classId < len(classes))
         label = '%s:%s' % (classes[classId], label)
+
+    client.publish("theia", label)
 
     #Display the label at the top of the bounding box
     labelSize, baseLine = cv.getTextSize(label, cv.FONT_HERSHEY_SIMPLEX, 0.5, 1)
